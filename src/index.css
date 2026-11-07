@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #080D1B;
+    color: #F1F5F9;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .font-heading {
+    font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* Surfaces and Glassmorphism */
+.glass-panel {
+  background: rgba(17, 26, 45, 0.72);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(145deg, rgba(22, 33, 58, 0.65) 0%, rgba(13, 20, 36, 0.9) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-hover:hover {
+  transform: translateY(-4px) scale(1.008);
+  border-color: rgba(128, 101, 255, 0.45);
+  box-shadow: 0 16px 36px -12px rgba(128, 101, 255, 0.22), 0 0 20px -2px rgba(66, 217, 245, 0.12);
+}
+
+/* Ambient glow & reflections */
+.glow-violet {
+  box-shadow: 0 0 35px -5px rgba(128, 101, 255, 0.4);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 35px -5px rgba(66, 217, 245, 0.4);
+}
+
+.glow-ambient {
+  box-shadow: 0 0 60px -15px rgba(128, 101, 255, 0.25), 0 0 40px -10px rgba(66, 217, 245, 0.18);
+}
+
+/* Custom laser scanline for Document Intelligence */
+@keyframes laser-sweep {
+  0% {
+    top: 0%;
+    opacity: 0.2;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0.2;
+  }
+}
+
+.animate-laser-scan {
+  animation: laser-sweep 2.6s ease-in-out infinite alternate;
+}
+
+/* Orbit rotations */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slow {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 34s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 44s linear infinite;
+}
+
+/* Floating animation for hero cards */
+@keyframes float-gentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1deg);
+  }
+}
+
+@keyframes float-delayed {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(-1deg);
+  }
+}
+
+.animate-float-gentle {
+  animation: float-gentle 7s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8.5s ease-in-out infinite;
+}
+
+/* Shimmer highlight on buttons */
+@keyframes shimmer-sweep {
+  0% {
+    transform: translateX(-150%);
+  }
+  100% {
+    transform: translateX(150%);
+  }
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer-sweep 3s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080D1B;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #19243C;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2E3E63;
+}
+
+/* Prefers-reduced-motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-spin-slow,
+  .animate-spin-reverse-slow,
+  .animate-float-gentle,
+  .animate-float-delayed,
+  .animate-laser-scan,
+  .animate-shimmer::after {
+    animation: none !important;
+  }
+}

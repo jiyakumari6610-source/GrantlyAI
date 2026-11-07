@@ -1,0 +1,141 @@
+{
+  "entities": {
+    "userProfile": {
+      "title": "UserProfile",
+      "description": "Student user profile stored at users/{uid}",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string", "maxLength": 120 },
+        "email": { "type": "string", "maxLength": 120 },
+        "phone": { "type": "string", "maxLength": 25 },
+        "dateOfBirth": { "type": "string", "maxLength": 20 },
+        "state": { "type": "string", "maxLength": 80 },
+        "city": { "type": "string", "maxLength": 80 },
+        "educationLevel": { "type": "string", "maxLength": 80 },
+        "course": { "type": "string", "maxLength": 120 },
+        "institution": { "type": "string", "maxLength": 160 },
+        "academicPercentage": { "type": "number" },
+        "annualFamilyIncome": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["fullName", "email"]
+    },
+    "scholarship": {
+      "title": "Scholarship",
+      "description": "Scholarship catalog listing at scholarships/{scholarshipId}",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 250 },
+        "provider": { "type": "string", "maxLength": 250 },
+        "description": { "type": "string", "maxLength": 3000 },
+        "awardAmount": { "type": "number" },
+        "currency": { "type": "string", "maxLength": 10 },
+        "educationLevel": { "type": "string", "maxLength": 100 },
+        "eligibleCourses": { "type": "array" },
+        "eligibleStates": { "type": "array" },
+        "minimumMarks": { "type": "number" },
+        "maximumFamilyIncome": { "type": "number" },
+        "requiredDocuments": { "type": "array" },
+        "deadline": { "type": "string", "maxLength": 40 },
+        "officialSourceUrl": { "type": "string", "maxLength": 500 },
+        "verificationStatus": { "type": "string", "maxLength": 50 },
+        "academicYear": { "type": "string", "maxLength": 30 },
+        "lastCheckedAt": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "provider", "awardAmount", "officialSourceUrl"]
+    },
+    "savedScholarship": {
+      "title": "SavedScholarship",
+      "description": "Bookmarked scholarship at users/{uid}/savedScholarships/{scholarshipId}",
+      "type": "object",
+      "properties": {
+        "scholarshipId": { "type": "string", "maxLength": 128 },
+        "savedAt": { "type": "string" }
+      },
+      "required": ["scholarshipId"]
+    },
+    "application": {
+      "title": "Application",
+      "description": "Application record at users/{uid}/applications/{applicationId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "scholarshipId": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "maxLength": 50 },
+        "notes": { "type": "string", "maxLength": 1500 },
+        "appliedDate": { "type": "string", "maxLength": 40 },
+        "documentsSubmitted": { "type": "array" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "scholarshipId", "status"]
+    },
+    "documentMetadata": {
+      "title": "DocumentMetadata",
+      "description": "Uploaded document metadata at users/{uid}/documents/{documentId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 255 },
+        "category": { "type": "string", "maxLength": 80 },
+        "fileType": { "type": "string", "maxLength": 80 },
+        "fileSize": { "type": "number" },
+        "uploadDate": { "type": "string" },
+        "status": { "type": "string", "maxLength": 50 },
+        "readinessScore": { "type": "number" },
+        "storagePath": { "type": "string", "maxLength": 500 },
+        "aiAnalysis": { "type": "object" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "name", "category", "status"]
+    },
+    "report": {
+      "title": "Report",
+      "description": "TrustGuard report at reports/{reportId}",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "scholarshipId": { "type": "string", "maxLength": 128 },
+        "scholarshipName": { "type": "string", "maxLength": 255 },
+        "reason": { "type": "string", "maxLength": 255 },
+        "details": { "type": "string", "maxLength": 2000 },
+        "reportedByUid": { "type": "string", "maxLength": 128 },
+        "userEmail": { "type": "string", "maxLength": 120 },
+        "reportedAt": { "type": "string" }
+      },
+      "required": ["id", "scholarshipId", "reason"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "userProfile" },
+      "description": "Private student profile data scoped to the authenticated UID"
+    },
+    "/scholarships/{scholarshipId}": {
+      "schema": { "$ref": "scholarship" },
+      "description": "Official scholarship directory listings"
+    },
+    "/users/{uid}/savedScholarships/{scholarshipId}": {
+      "schema": { "$ref": "savedScholarship" },
+      "description": "Scholarships saved by student"
+    },
+    "/users/{uid}/applications/{applicationId}": {
+      "schema": { "$ref": "application" },
+      "description": "Application history and tracking records for student"
+    },
+    "/users/{uid}/documents/{documentId}": {
+      "schema": { "$ref": "documentMetadata" },
+      "description": "Document verification metadata (without binary payload)"
+    },
+    "/reports/{reportId}": {
+      "schema": { "$ref": "report" },
+      "description": "Suspicious listing reports submitted by users"
+    }
+  }
+}

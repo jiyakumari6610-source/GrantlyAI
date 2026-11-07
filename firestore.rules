@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'jiya72637@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Admin authorization documents
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // Student Profiles (users/{uid})
+    match /users/{uid} {
+      allow get: if isOwner(uid) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(uid) && isValidId(uid);
+      allow update: if isOwner(uid);
+      allow delete: if isOwner(uid) || isAdmin();
+
+      // Saved Scholarships subcollection
+      match /savedScholarships/{scholarshipId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Applications subcollection
+      match /applications/{applicationId} {
+        allow read, write: if isOwner(uid);
+      }
+
+      // Document Metadata subcollection (metadata only, no raw file payloads)
+      match /documents/{documentId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // Official Scholarship Catalog (scholarships/{scholarshipId})
+    // Publicly readable for students/unauthenticated visitors; strictly admin-write
+    match /scholarships/{scholarshipId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Suspicious / TrustGuard Reports (reports/{reportId})
+    match /reports/{reportId} {
+      // User can submit report with their own UID (or anonymous), but cannot forge other users' UIDs
+      allow create: if request.resource.data.scholarshipId is string
+                    && request.resource.data.reason is string
+                    && (
+                      !isSignedIn() ||
+                      !('reportedByUid' in request.resource.data) ||
+                      request.resource.data.reportedByUid == request.auth.uid
+                    );
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
